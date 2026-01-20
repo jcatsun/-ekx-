@@ -1,4 +1,23 @@
-[{ text: currentMessage }];
+import { GoogleGenAI } from "@google/genai";
+import { Message, ChatMode } from "../types";
+
+const SYSTEM_INSTRUCTIONS = {
+  general: "You are iChat, a premium AI assistant built for iPhone. Your tone is sophisticated, concise, and helpful. Use iOS-style emojis occasionally. Format long lists with bullet points. Always provide actionable advice.",
+  'passive-income': "You are the Wealth Strategist. Your mission is to help users generate passive income through technology, SaaS, and automation. You focus on scalability, low overhead, and high-margin systems. Be analytical, encouraging, and highly professional."
+};
+
+export class GeminiService {
+  async sendMessage(
+    history: Message[],
+    currentMessage: string,
+    mode: ChatMode = 'general',
+    image?: string
+  ): Promise<string> {
+    // Initialization must use process.env.API_KEY directly
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+    const modelName = 'gemini-3-flash-preview';
+    
+    const parts: any[] = [{ text: currentMessage }];
     
     if (image) {
       const base64Data = image.includes('base64,') ? image.split('base64,')[1] : image;
@@ -27,35 +46,16 @@
         }
       });
 
-      // Directly access .text property as per guidelines
+      // Directly access .text property as per guidelines (not a method)
       return response.text || "I'm sorry, I couldn't generate a response.";
     } catch (error: any) {
       console.error("Gemini API Error:", error);
       if (error.message?.includes("API_KEY")) {
-        return "⚠️ Configuration Error: Please check your Gemini API key in Vercel settings.";
+        return "⚠️ Configuration Error: Please check your Gemini API key in your environment variables.";
       }
       return "⚠️ Connection Error: I'm having trouble reaching the AI. Please try again later.";
     }
   }
 }
 
-export const geminiService = new GeminiService();import { GoogleGenAI } from "@google/genai";
-import { Message, ChatMode } from "../types";
-
-const SYSTEM_INSTRUCTIONS = {
-  general: "You are iChat, a premium AI assistant built for iPhone. Your tone is sophisticated, concise, and helpful. Use iOS-style emojis occasionally. Format long lists with bullet points. Always provide actionable advice.",
-  'passive-income': "You are the Wealth Strategist. Your mission is to help users generate passive income through technology, SaaS, and automation. You focus on scalability, low overhead, and high-margin systems. Be analytical, encouraging, and highly professional."
-};
-
-export class GeminiService {
-  async sendMessage(
-    history: Message[],
-    currentMessage: string,
-    mode: ChatMode = 'general',
-    image?: string
-  ): Promise<string> {
-    // Standard initialization per guidelines
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
-    const modelName = 'gemini-3-flash-preview';
-    
-    const parts
+export const geminiService = new GeminiS
