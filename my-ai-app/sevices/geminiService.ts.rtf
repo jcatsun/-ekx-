@@ -13,6 +13,7 @@ export class GeminiService {
     mode: ChatMode = 'general',
     image?: string
   ): Promise<string> {
+    // Re-initialize to ensure we use the latest injected API key from Vercel
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
     const modelName = 'gemini-3-flash-preview';
     
@@ -45,16 +46,14 @@ export class GeminiService {
         }
       });
 
-      // Use the .text property as per the latest SDK rules
+      // Directly access .text property per SDK guidelines
       return response.text || "I'm sorry, I couldn't generate a response.";
     } catch (error: any) {
       console.error("Gemini API Error:", error);
       if (error.message?.includes("API_KEY")) {
-        return "⚠️ Configuration Error: Please check your Gemini API key in Vercel settings.";
+        return "⚠️ Configuration Error: Please check your Gemini API key in your deployment settings.";
       }
       return "⚠️ Connection Error: I'm having trouble reaching the AI. Please try again later.";
     }
   }
 }
-
-export const geminiService = new GeminiService();
